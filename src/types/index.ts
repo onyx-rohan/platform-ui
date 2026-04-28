@@ -1,47 +1,78 @@
+export type UserType = 'CONSUMER' | 'BUSINESS' | 'ADMIN' | 'SUPER'
+export type AccountStatus = 'ACTIVE' | 'INACTIVE' | 'DEACTIVATED' | 'PENDING_DEACTIVATION'
+export type SubscriptionStatus = 'PENDING_PAYMENT' | 'GRACE_PERIOD' | 'DEACTIVATED' | 'ACTIVE'
+export type DueCycle = 'WEEKLY' | 'BI_WEEKLY' | 'MONTHLY' | 'SEMI_MONTHLY' | 'BI_MONTHLY' | 'QUARTERLY' | 'SEMI_YEARLY' | 'YEARLY'
+export type OfferingTier = 'SIMPLE' | 'PRO' | 'ENTERPRISE' | 'LIMITED' | 'NONE'
+
+export interface BusinessType {
+  id: number
+  type: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface User {
   id: number
-  cognitoId: string
-  email: string
   firstName: string
   lastName: string
-  phone?: string
-  role: 'admin' | 'business' | 'user'
-  active: boolean
+  email: string
+  phone: string
+  country: string
+  role: UserType
+  status: AccountStatus
+  deleted: boolean
+  business?: Business
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Business {
   id: number
   name: string
-  phone?: string
-  vatNumber?: string
+  phone: string
   country: string
-  type: string
-  active: boolean
-  subscriptionStatus: 'active' | 'grace_period' | 'pending_payment' | 'inactive'
-  paymentCycle: 'monthly' | 'annual'
-  nextPaymentDue?: string
+  vatNumber: string
+  type: BusinessType
+  subscription?: Subscription
+  owner: User
+  customerToken: string
+  cardToken: string
+  status: AccountStatus
+  deleted: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface Subscription {
+  id: number
+  totalPrice: number
+  gracePeriod: string
+  dueCycle: DueCycle
+  status: SubscriptionStatus
+  nextDueDate: string
+  deleted: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Product {
   id: number
   name: string
-  description?: string
-  active: boolean
+  description: string
+  deleted: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ProductOffering {
   id: number
-  productId: number
-  name: string
+  tier: OfferingTier
+  description: string
   price: number
-  usageLimit?: number
-}
-
-export interface Subscription {
-  id: number
-  businessId: number
-  offeringId: number
-  status: 'active' | 'grace_period' | 'pending_payment' | 'inactive'
-  startDate: string
-  nextPaymentDue?: string
+  limit: number
+  resetCycle: DueCycle
+  product: Product
+  deleted: boolean
+  createdAt: string
+  updatedAt: string
 }
