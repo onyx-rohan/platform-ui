@@ -78,3 +78,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .live-password-checklist-tooltip {
+    @apply absolute left-0 top-full z-10 mt-1 w-full rounded-md border bg-popover p-3 shadow-md;
+    @apply opacity-0 pointer-events-none transition-opacity duration-150;
+    @apply group-hover:opacity-100 group-hover:pointer-events-auto;
+  }
+}

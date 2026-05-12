@@ -1,19 +1,26 @@
 import { Link, Outlet } from 'react-router-dom'
 import { ChevronDown, LogOut, User as UserIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { NavDropdown } from '@/components/NavDropdown'
 import { useAuth } from '@/hooks/useAuth'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { useProducts } from '@/hooks/useProducts'
+import AuthLayout, { useAuthLayout } from '@/app/layouts/AuthLayout'
 
 export default function MainLayout() {
+  return (
+    <AuthLayout>
+      <MainLayoutInner />
+    </AuthLayout>
+  )
+}
+
+function MainLayoutInner() {
   const { isAuthenticated, signOut } = useAuth()
   const { data: currentUser } = useCurrentUser()
   const { data: products } = useProducts()
+  const { openLoginModal, openSignUpModal } = useAuthLayout()
 
   const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'SUPER'
 
@@ -98,11 +105,11 @@ export default function MainLayout() {
               </NavDropdown>
             ) : (
               <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link to="/login">Login</Link>
+                <Button variant="ghost" size="sm" onClick={openLoginModal}>
+                  Login
                 </Button>
-                <Button size="sm" asChild>
-                  <Link to="/sign-up">Sign Up</Link>
+                <Button size="sm" onClick={openSignUpModal}>
+                  Sign Up
                 </Button>
               </>
             )}
