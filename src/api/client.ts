@@ -14,4 +14,14 @@ apiClient.interceptors.request.use(async (config) => {
   return config
 })
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status
+    const url = error.config?.url
+    console.error(`API error ${status ?? 'NETWORK'} — ${url}`, error)
+    return Promise.reject(error)
+  }
+)
+
 export default apiClient

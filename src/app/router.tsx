@@ -2,19 +2,15 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import AdminRoute from '@/components/AdminRoute'
-import HomePage from '@/features/home/HomePage'
-import ProductsPage from '@/features/products/ProductsPage'
-import CompanyPage from '@/features/company/CompanyPage'
-import LoginPage from '@/features/auth/LoginPage'
-import SignUpPage from '@/features/auth/SignUpPage'
-import ForgotPasswordPage from '@/features/auth/ForgotPasswordPage'
-import OTPValidationPage from '@/features/auth/OTPValidationPage'
-import ChangePasswordPage from '@/features/auth/ChangePasswordPage'
-import ProfilePage from '@/features/user/ProfilePage'
-import BusinessPage from '@/features/business/BusinessPage'
-import ManageUsersPage from '@/features/admin/ManageUsersPage'
-import ManageBusinessesPage from '@/features/admin/ManageBusinessesPage'
-import ManageProductsPage from '@/features/admin/ManageProductsPage'
+import { LoginRedirect, SignUpRedirect } from '@/app/auth/AuthRedirect'
+import HomePage from '@/app/home/HomePage'
+import ProductsPage from '@/app/products/ProductsPage'
+import CompanyPage from '@/app/company/CompanyPage'
+import BusinessPage from '@/app/business/BusinessPage'
+import ProfilePage from '@/app/user/ProfilePage'
+import ManageUsersPage from '@/app/admin/ManageUsersPage'
+import ManageBusinessesPage from '@/app/admin/ManageBusinessesPage'
+import ManageProductsPage from '@/app/admin/ManageProductsPage'
 
 export const router = createBrowserRouter([
   {
@@ -24,16 +20,13 @@ export const router = createBrowserRouter([
       { path: '/products',          element: <ProductsPage /> },
       { path: '/products/:id',      element: <ProductsPage /> },
       { path: '/company',           element: <CompanyPage /> },
-      { path: '/login',             element: <LoginPage /> },
-      { path: '/sign-up',           element: <SignUpPage /> },
-      { path: '/forgot-password',   element: <ForgotPasswordPage /> },
+      { path: '/login',             element: <LoginRedirect /> },
+      { path: '/sign-up',           element: <SignUpRedirect /> },
       {
         element: <ProtectedRoute />,
         children: [
-          { path: '/otp-validation',  element: <OTPValidationPage /> },
-          { path: '/change-password', element: <ChangePasswordPage /> },
-          { path: '/profile',         element: <ProfilePage /> },
-          { path: '/business/:id',    element: <BusinessPage /> },
+          { path: '/profile',               element: <ProfilePage /> },
+          { path: '/business/:id',          element: <BusinessPage /> },
           {
             element: <AdminRoute />,
             children: [
