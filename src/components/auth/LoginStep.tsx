@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { signIn } from 'aws-amplify/auth'
+import { signIn, resendSignUpCode } from 'aws-amplify/auth'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -26,14 +26,24 @@ export default function LoginStep() {
     defaultValues: { email: '', password: '' },
   })
 
-  async function onSubmit(values: LoginFormValues) {
+  async function onSubmit(loginForm: LoginFormValues) {
     setIsLoading(true)
     try {
-      await signIn({ username: values.email, password: values.password })
+      await signIn({ username: loginForm.email, password: loginForm.password })
       closeAuthLayout()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Incorrect username or password'
-      toast.error('Login failed', { description: message })
+      if (err instanceof Error && err.name === 'UserNotConfirmedException') {
+        try {
+          await resendSignUpCode({ username: loginForm.email })
+          toast.info('Verify your email', { description: 'A new confirmation code has been sent.' })
+          goToStep('otp', { email: loginForm.email, reason: 'SIGNUP' })
+        } catch {
+          toast.error('Login failed', { description: 'Account unconfirmed and resend failed. Please sign up again.' })
+        }
+      } else {
+        const message = err instanceof Error ? err.message : 'Incorrect username or password'
+        toast.error('Login failed', { description: message })
+      }
     } finally {
       setIsLoading(false)
     }

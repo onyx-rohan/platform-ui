@@ -32,7 +32,7 @@ export default function OTPStep() {
   const [isLoading, setIsLoading] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const expired = countdown === 0
+  const canResend = countdown === 0
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
@@ -111,7 +111,6 @@ export default function OTPStep() {
                       placeholder="123456"
                       maxLength={6}
                       inputMode="numeric"
-                      disabled={expired}
                       {...field}
                     />
                   </FormControl>
@@ -120,22 +119,23 @@ export default function OTPStep() {
               )}
             />
 
-            <Button
-              type={expired ? 'button' : 'submit'}
-              className="w-full"
-              disabled={isLoading}
-              onClick={expired ? handleResend : undefined}
-            >
-              {isLoading
-                ? (expired ? 'Sending...' : 'Verifying...')
-                : (expired ? 'Resend' : 'Submit')}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Verifying...' : 'Submit'}
             </Button>
 
-            {!expired && (
-              <p className="text-center text-xs text-muted-foreground">
-                Code expires in {formatCountdown(countdown)}
-              </p>
-            )}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={!canResend || isLoading}
+              onClick={handleResend}
+            >
+              {isLoading && canResend
+                ? 'Sending...'
+                : canResend
+                  ? 'Resend'
+                  : `Resend (${formatCountdown(countdown)})`}
+            </Button>
           </form>
         </Form>
       </CardContent>
