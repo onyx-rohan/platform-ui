@@ -134,7 +134,7 @@ export default function SignUpStep() {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
             <Accordion
               type="single"
               collapsible
@@ -395,12 +395,12 @@ export default function SignUpStep() {
         </Form>
       </CardContent>
 
-      <CardFooter className="justify-center text-sm text-muted-foreground">
+      <CardFooter className="auth-card-footer">
         Already have an account?{' '}
         <button
           type="button"
           onClick={() => goToStep('login')}
-          className="ml-1 text-primary hover:underline"
+          className="auth-link"
         >
           Login
         </button>

@@ -39,9 +39,9 @@ export default function ForgotPasswordStep() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Forgot Password</CardTitle>
+    <Card className="auth-card">
+      <CardHeader className="auth-card-header">
+        <CardTitle className="auth-card-title">Forgot Password</CardTitle>
         <CardDescription>
           Enter your email and we'll send you a code to reset your password.
         </CardDescription>
@@ -49,7 +49,7 @@ export default function ForgotPasswordStep() {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
             <FormField
               control={form.control}
               name="email"
@@ -70,12 +70,12 @@ export default function ForgotPasswordStep() {
         </Form>
       </CardContent>
 
-      <CardFooter className="justify-center text-sm text-muted-foreground">
+      <CardFooter className="auth-card-footer">
         Remember your password?{' '}
         <button
           type="button"
           onClick={() => goToStep('login')}
-          className="ml-1 text-primary hover:underline"
+          className="auth-link"
         >
           Login
         </button>

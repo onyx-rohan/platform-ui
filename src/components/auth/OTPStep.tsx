@@ -89,9 +89,9 @@ export default function OTPStep() {
     : ''
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Enter Verification Code</CardTitle>
+    <Card className="auth-card">
+      <CardHeader className="auth-card-header">
+        <CardTitle className="auth-card-title">Enter Verification Code</CardTitle>
         <CardDescription>
           A 6-digit code was sent to {maskedEmail}.
         </CardDescription>
@@ -99,7 +99,7 @@ export default function OTPStep() {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
             <FormField
               control={form.control}
               name="code"

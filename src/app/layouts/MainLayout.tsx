@@ -40,7 +40,7 @@ function MainLayoutInner() {
 
             <NavDropdown
               trigger={
-                <Button variant="ghost" size="sm" className="gap-1">
+                <Button variant="ghost" size="sm" className="px-1.5">
                   Products <ChevronDown className="h-3 w-3" />
                 </Button>
               }
@@ -50,6 +50,10 @@ function MainLayoutInner() {
                   <Link to={`/products/${product.id}`}>{product.name}</Link>
                 </DropdownMenuItem>
               ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/products">View All</Link>
+              </DropdownMenuItem>
             </NavDropdown>
 
             <Button variant="ghost" size="sm" asChild>

@@ -75,12 +75,12 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     }}>
       {children}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="auth-modal-overlay">
           <div
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+            className="auth-modal-backdrop"
             onClick={closeAuthLayout}
           />
-          <div className="relative z-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="auth-modal-content">
             {currentStep === 'login' && <LoginStep />}
             {currentStep === 'signup' && <SignUpStep />}
             {currentStep === 'forgot-password' && <ForgotPasswordStep />}

@@ -50,9 +50,9 @@ export default function LoginStep() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Onyx Platform</CardTitle>
+    <Card className="auth-card">
+      <CardHeader className="auth-card-header">
+        <CardTitle className="auth-card-title">Onyx Platform</CardTitle>
         <CardDescription>
           Enter your email and password to login to the Onyx Platform.
         </CardDescription>
@@ -60,7 +60,7 @@ export default function LoginStep() {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
             <FormField
               control={form.control}
               name="email"

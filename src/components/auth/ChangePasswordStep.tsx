@@ -73,15 +73,15 @@ export default function ChangePasswordStep() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Set New Password</CardTitle>
+    <Card className="auth-card">
+      <CardHeader className="auth-card-header">
+        <CardTitle className="auth-card-title">Set New Password</CardTitle>
         <CardDescription>Choose a strong password for your account.</CardDescription>
       </CardHeader>
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
             <FormField
               control={form.control}
               name="newPassword"
