@@ -100,6 +100,11 @@
   .product-grid   { @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3; }
   .detail-row     { @apply flex justify-between; }
 
+  /* Admin modal */
+  .admin-modal-overlay  { @apply fixed inset-0 z-50 flex items-center justify-center p-4; }
+  .admin-modal-backdrop { @apply fixed inset-0 bg-background/80 backdrop-blur-sm; }
+  .admin-modal-content  { @apply relative z-50 w-full max-w-4xl max-h-[90vh] overflow-y-auto; }
+
   /* Password checklist tooltip */
   .live-password-checklist-tooltip {
     @apply absolute left-0 top-full z-10 mt-1 w-full rounded-md border bg-popover p-3 shadow-md;

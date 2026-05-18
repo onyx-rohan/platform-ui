@@ -1,4 +1,5 @@
 export type UserType = 'CONSUMER' | 'BUSINESS' | 'ADMIN' | 'SUPER'
+export type PaymentMethod = 'CARD' | 'CASH'
 export type AccountStatus = 'ACTIVE' | 'INACTIVE' | 'DEACTIVATED' | 'PENDING_DEACTIVATION'
 export type SubscriptionStatus = 'PENDING_PAYMENT' | 'GRACE_PERIOD' | 'DEACTIVATED' | 'ACTIVE'
 export type DueCycle = 'WEEKLY' | 'BI_WEEKLY' | 'MONTHLY' | 'SEMI_MONTHLY' | 'BI_MONTHLY' | 'QUARTERLY' | 'SEMI_YEARLY' | 'YEARLY'
@@ -71,6 +72,7 @@ export interface ProductOffering {
   price: number
   limit: number
   resetCycle: DueCycle
+  paymentMethods: PaymentMethod[]
   product: Product
   deleted: boolean
   createdAt: string
