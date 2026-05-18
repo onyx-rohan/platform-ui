@@ -15,28 +15,28 @@ const schema = z.object({
   password: z.string().min(1, { message: 'Password is required' }),
 })
 
-type LoginFormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>
 
-export default function LoginStep() {
-  const { closeAuthLayout, goToStep } = useAuthLayout()
+export default function LoginForm() {
+  const { close, openForgotPassword, openSignUp, openOTP } = useAuthLayout()
   const [isLoading, setIsLoading] = useState(false)
 
-  const form = useForm<LoginFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { email: '', password: '' },
   })
 
-  async function onSubmit(loginForm: LoginFormValues) {
+  async function onSubmit(values: FormValues) {
     setIsLoading(true)
     try {
-      await signIn({ username: loginForm.email, password: loginForm.password })
-      closeAuthLayout()
+      await signIn({ username: values.email, password: values.password })
+      close()
     } catch (err) {
       if (err instanceof Error && err.name === 'UserNotConfirmedException') {
         try {
-          await resendSignUpCode({ username: loginForm.email })
+          await resendSignUpCode({ username: values.email })
           toast.info('Verify your email', { description: 'A new confirmation code has been sent.' })
-          goToStep('otp', { email: loginForm.email, reason: 'SIGNUP' })
+          openOTP(values.email, 'SIGNUP')
         } catch {
           toast.error('Login failed', { description: 'Account unconfirmed and resend failed. Please sign up again.' })
         }
@@ -96,20 +96,12 @@ export default function LoginStep() {
       </CardContent>
 
       <CardFooter className="flex justify-between text-sm">
-        <button
-          type="button"
-          onClick={() => goToStep('forgot-password')}
-          className="text-muted-foreground hover:text-primary hover:underline"
-        >
+        <button type="button" onClick={openForgotPassword} className="text-muted-foreground hover:text-primary hover:underline">
           Forgot password?
         </button>
         <span className="text-muted-foreground">
           New here?{' '}
-          <button
-            type="button"
-            onClick={() => goToStep('signup')}
-            className="text-primary hover:underline"
-          >
+          <button type="button" onClick={openSignUp} className="text-primary hover:underline">
             Sign up
           </button>
         </span>

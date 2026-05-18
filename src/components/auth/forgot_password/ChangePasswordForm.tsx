@@ -26,7 +26,7 @@ const schema = z.object({
   path: ['confirmPassword'],
 })
 
-type ChangePasswordFormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>
 
 const rules = [
   { label: 'Minimum 8 characters',          test: (v: string) => v.length >= 8 },
@@ -37,12 +37,11 @@ const rules = [
   { label: 'At least one special character', test: (v: string) => /[#?!@$%^&*-]/.test(v) },
 ]
 
-export default function ChangePasswordStep() {
-  const { goToStep, stepData } = useAuthLayout()
-  const { email, confirmationCode } = stepData
+export default function ChangePasswordForm({ email, confirmationCode }: { email: string; confirmationCode: string }) {
+  const { openLogin, openForgotPassword } = useAuthLayout()
   const [isLoading, setIsLoading] = useState(false)
 
-  const form = useForm<ChangePasswordFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { newPassword: '', confirmPassword: '' },
   })
@@ -53,17 +52,12 @@ export default function ChangePasswordStep() {
   const anyPasswordRuleFailing = newPassword.length > 0 && rules.some(rule => !rule.test(newPassword))
   const passwordsNotMatching = confirmPassword.length > 0 && newPassword !== confirmPassword
 
-  async function onSubmit(values: ChangePasswordFormValues) {
-    if (!email || !confirmationCode) {
-      toast.error('Session expired', { description: 'Please restart the password reset flow.' })
-      goToStep('forgot-password')
-      return
-    }
+  async function onSubmit(values: FormValues) {
     setIsLoading(true)
     try {
       await confirmResetPassword({ username: email, confirmationCode, newPassword: values.newPassword })
       toast.success('Password changed', { description: 'You can now log in with your new password.' })
-      goToStep('login')
+      openLogin()
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to change password'
       toast.error('Change failed', { description: message })
@@ -92,10 +86,7 @@ export default function ChangePasswordStep() {
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
-                    <div className={cn(
-                      'live-password-checklist-tooltip',
-                      anyPasswordRuleFailing && 'opacity-100 pointer-events-auto'
-                    )}>
+                    <div className={cn('live-password-checklist-tooltip', anyPasswordRuleFailing && 'opacity-100 pointer-events-auto')}>
                       <ul className="space-y-1 text-xs">
                         {rules.map(rule => {
                           const passed = rule.test(newPassword)
@@ -124,10 +115,7 @@ export default function ChangePasswordStep() {
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
-                    <div className={cn(
-                      'live-password-checklist-tooltip',
-                      passwordsNotMatching && 'opacity-100 pointer-events-auto'
-                    )}>
+                    <div className={cn('live-password-checklist-tooltip', passwordsNotMatching && 'opacity-100 pointer-events-auto')}>
                       <ul className="text-xs">
                         <li className={cn('flex items-center gap-1.5', confirmPassword && newPassword === confirmPassword ? 'text-green-600' : 'text-muted-foreground')}>
                           {confirmPassword && newPassword === confirmPassword

@@ -52,10 +52,10 @@ const schema = z.object({
   path: ['confirmPassword'],
 })
 
-type SignUpFormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>
 
-export default function SignUpStep() {
-  const { goToStep } = useAuthLayout()
+export default function SignUpForm() {
+  const { openLogin, openOTP } = useAuthLayout()
   const [isLoading, setIsLoading] = useState(false)
   const [openSection, setOpenSection] = useState<string>('user-info')
 
@@ -66,7 +66,7 @@ export default function SignUpStep() {
       .sort((a, b) => a.name.localeCompare(b.name))
   }, [])
 
-  const form = useForm<SignUpFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       firstName: '', lastName: '', email: '', password: '',
@@ -81,7 +81,7 @@ export default function SignUpStep() {
   const anyPasswordRuleFailing = password.length > 0 && passwordRules.some(rule => !rule.test(password))
   const passwordsNotMatching = confirmPassword.length > 0 && password !== confirmPassword
 
-  async function onSubmit(values: SignUpFormValues) {
+  async function onSubmit(values: FormValues) {
     setIsLoading(true)
     try {
       await signUp({
@@ -114,7 +114,7 @@ export default function SignUpStep() {
         }))
       }
 
-      goToStep('otp', { email: values.email, reason: 'SIGNUP' })
+      openOTP(values.email, 'SIGNUP')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Registration failed'
       toast.error('Sign up failed', { description: message })
@@ -135,12 +135,7 @@ export default function SignUpStep() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
-            <Accordion
-              type="single"
-              collapsible
-              value={openSection}
-              onValueChange={setOpenSection}
-            >
+            <Accordion type="single" collapsible value={openSection} onValueChange={setOpenSection}>
               <AccordionItem value="user-info">
                 <AccordionTrigger>User Information</AccordionTrigger>
                 <AccordionContent>
@@ -152,9 +147,7 @@ export default function SignUpStep() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>First Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="John" {...field} />
-                            </FormControl>
+                            <FormControl><Input placeholder="John" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -165,9 +158,7 @@ export default function SignUpStep() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Last Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Doe" {...field} />
-                            </FormControl>
+                            <FormControl><Input placeholder="Doe" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -180,9 +171,7 @@ export default function SignUpStep() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" placeholder="you@example.com" {...field} />
-                          </FormControl>
+                          <FormControl><Input type="email" placeholder="you@example.com" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -198,10 +187,7 @@ export default function SignUpStep() {
                             <FormControl>
                               <Input type="password" placeholder="••••••••" {...field} />
                             </FormControl>
-                            <div className={cn(
-                              'live-password-checklist-tooltip',
-                              anyPasswordRuleFailing && 'opacity-100 pointer-events-auto'
-                            )}>
+                            <div className={cn('live-password-checklist-tooltip', anyPasswordRuleFailing && 'opacity-100 pointer-events-auto')}>
                               <ul className="space-y-1 text-xs">
                                 {passwordRules.map(rule => {
                                   const passed = rule.test(password)
@@ -230,10 +216,7 @@ export default function SignUpStep() {
                             <FormControl>
                               <Input type="password" placeholder="••••••••" {...field} />
                             </FormControl>
-                            <div className={cn(
-                              'live-password-checklist-tooltip',
-                              passwordsNotMatching && 'opacity-100 pointer-events-auto'
-                            )}>
+                            <div className={cn('live-password-checklist-tooltip', passwordsNotMatching && 'opacity-100 pointer-events-auto')}>
                               <ul className="text-xs">
                                 <li className={cn('flex items-center gap-1.5', confirmPassword && password === confirmPassword ? 'text-green-600' : 'text-muted-foreground')}>
                                   {confirmPassword && password === confirmPassword
@@ -258,14 +241,10 @@ export default function SignUpStep() {
                             <FormLabel>Country</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select country" />
-                                </SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {countries.map(c => (
-                                  <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>
-                                ))}
+                                {countries.map(c => <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>)}
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -278,9 +257,7 @@ export default function SignUpStep() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Phone</FormLabel>
-                            <FormControl>
-                              <Input type="tel" placeholder="+1 555 000 0000" {...field} />
-                            </FormControl>
+                            <FormControl><Input type="tel" placeholder="+1 555 000 0000" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -288,9 +265,7 @@ export default function SignUpStep() {
                     </div>
 
                     <div className="flex justify-end">
-                      <Button type="button" variant="outline" onClick={() => setOpenSection('card-info')}>
-                        Next
-                      </Button>
+                      <Button type="button" variant="outline" onClick={() => setOpenSection('card-info')}>Next</Button>
                     </div>
                   </div>
                 </AccordionContent>
@@ -300,13 +275,9 @@ export default function SignUpStep() {
                 <AccordionTrigger>Card Information</AccordionTrigger>
                 <AccordionContent>
                   <div className="space-y-4 pt-2">
-                    <p className="text-sm text-muted-foreground">
-                      Card integration coming soon. You can skip this step.
-                    </p>
+                    <p className="text-sm text-muted-foreground">Card integration coming soon. You can skip this step.</p>
                     <div className="flex justify-end">
-                      <Button type="button" variant="outline" onClick={() => setOpenSection('business-info')}>
-                        Next
-                      </Button>
+                      <Button type="button" variant="outline" onClick={() => setOpenSection('business-info')}>Next</Button>
                     </div>
                   </div>
                 </AccordionContent>
@@ -324,9 +295,7 @@ export default function SignUpStep() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Business Name</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Acme Corp" {...field} />
-                          </FormControl>
+                          <FormControl><Input placeholder="Acme Corp" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -341,14 +310,10 @@ export default function SignUpStep() {
                             <FormLabel>Country</FormLabel>
                             <Select onValueChange={field.onChange} value={field.value}>
                               <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select country" />
-                                </SelectTrigger>
+                                <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {countries.map(c => (
-                                  <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>
-                                ))}
+                                {countries.map(c => <SelectItem key={c.code} value={c.name}>{c.name}</SelectItem>)}
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -361,9 +326,7 @@ export default function SignUpStep() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Phone</FormLabel>
-                            <FormControl>
-                              <Input type="tel" placeholder="+1 555 000 0000" {...field} />
-                            </FormControl>
+                            <FormControl><Input type="tel" placeholder="+1 555 000 0000" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -376,9 +339,7 @@ export default function SignUpStep() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>VAT Number</FormLabel>
-                          <FormControl>
-                            <Input placeholder="VAT-123456789" {...field} />
-                          </FormControl>
+                          <FormControl><Input placeholder="VAT-123456789" {...field} /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -397,13 +358,7 @@ export default function SignUpStep() {
 
       <CardFooter className="auth-card-footer">
         Already have an account?{' '}
-        <button
-          type="button"
-          onClick={() => goToStep('login')}
-          className="auth-link"
-        >
-          Login
-        </button>
+        <button type="button" onClick={openLogin} className="auth-link">Login</button>
       </CardFooter>
     </Card>
   )

@@ -1,17 +1,21 @@
 import { Link, Outlet } from 'react-router-dom'
 import { ChevronDown, LogOut, User as UserIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from '@/components/ui/dropdown-menu'
 import { NavDropdown } from '@/components/NavDropdown'
 import { useAuth } from '@/hooks/useAuth'
 import { useCurrentUser } from '@/hooks/useCurrentUser'
 import { useProducts } from '@/hooks/useProducts'
+import { isAdminRole } from '@/lib/utils'
 import AuthLayout, { useAuthLayout } from '@/app/layouts/AuthLayout'
+import AdminLayout from '@/app/layouts/AdminLayout'
 
 export default function MainLayout() {
   return (
     <AuthLayout>
-      <MainLayoutInner />
+      <AdminLayout>
+        <MainLayoutInner />
+      </AdminLayout>
     </AuthLayout>
   )
 }
@@ -20,9 +24,9 @@ function MainLayoutInner() {
   const { isAuthenticated, signOut } = useAuth()
   const { data: currentUser } = useCurrentUser()
   const { data: products } = useProducts()
-  const { openLoginModal, openSignUpModal } = useAuthLayout()
+  const { openLogin, openSignUp } = useAuthLayout()
 
-  const isAdmin = currentUser?.role === 'ADMIN' || currentUser?.role === 'SUPER'
+  const isAdmin = isAdminRole(currentUser?.role)
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -71,15 +75,41 @@ function MainLayoutInner() {
                   </Button>
                 }
               >
-                <DropdownMenuItem asChild>
-                  <Link to="/admin/users">Manage Users</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/admin/businesses">Manage Businesses</Link>
-                </DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger title="View and manage products">
+                    Products
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem asChild>
+                      <Link to="/products">All Products</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/products" title="Manage pricing tiers and plans — select a product to edit its offerings">
+                        Product Offerings
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger title="View and manage businesses">
+                    Businesses
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin/businesses">All Businesses</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin/businesses" title="Manage which products a business is subscribed to — select a business to edit its products">
+                        Business Products
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/admin/products">Manage Products</Link>
+                  <Link to="/admin/users" title="View and manage user accounts">Users</Link>
                 </DropdownMenuItem>
               </NavDropdown>
             )}
@@ -109,10 +139,10 @@ function MainLayoutInner() {
               </NavDropdown>
             ) : (
               <>
-                <Button variant="ghost" size="sm" onClick={openLoginModal}>
+                <Button variant="ghost" size="sm" onClick={openLogin}>
                   Login
                 </Button>
-                <Button size="sm" onClick={openSignUpModal}>
+                <Button size="sm" onClick={openSignUp}>
                   Sign Up
                 </Button>
               </>

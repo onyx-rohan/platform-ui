@@ -16,7 +16,7 @@ const schema = z.object({
   code: z.string().length(6, 'Code must be 6 digits').regex(/^\d+$/, 'Digits only'),
 })
 
-type OTPFormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>
 
 function formatCountdown(seconds: number) {
   const m = Math.floor(seconds / 60).toString().padStart(2, '0')
@@ -24,10 +24,8 @@ function formatCountdown(seconds: number) {
   return `${m}:${s}`
 }
 
-export default function OTPStep() {
-  const { goToStep, stepData } = useAuthLayout()
-  const { email, reason } = stepData
-
+export default function OTPForm({ email, reason }: { email: string; reason: 'SIGNUP' | 'RESET_PASSWORD' }) {
+  const { openLogin, openChangePassword } = useAuthLayout()
   const [countdown, setCountdown] = useState(OTP_TTL)
   const [isLoading, setIsLoading] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -43,20 +41,20 @@ export default function OTPStep() {
     }
   }, [])
 
-  const form = useForm<OTPFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { code: '' },
   })
 
-  async function onSubmit(values: OTPFormValues) {
+  async function onSubmit(values: FormValues) {
     setIsLoading(true)
     try {
       if (reason === 'SIGNUP') {
-        await confirmSignUp({ username: email!, confirmationCode: values.code })
+        await confirmSignUp({ username: email, confirmationCode: values.code })
         toast.success('Email verified', { description: 'You can now log in.' })
-        goToStep('login')
+        openLogin()
       } else {
-        goToStep('change-password', { confirmationCode: values.code })
+        openChangePassword(email, values.code)
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Invalid code'
@@ -70,9 +68,9 @@ export default function OTPStep() {
     setIsLoading(true)
     try {
       if (reason === 'SIGNUP') {
-        await resendSignUpCode({ username: email! })
+        await resendSignUpCode({ username: email })
       } else {
-        await resetPassword({ username: email! })
+        await resetPassword({ username: email })
       }
       toast.success('Code resent', { description: `A new code was sent to ${email}.` })
       setCountdown(OTP_TTL)
@@ -84,17 +82,13 @@ export default function OTPStep() {
     }
   }
 
-  const maskedEmail = email
-    ? email.replace(/(.{2})(.*)(?=@)/, (_, a, b) => a + '*'.repeat(b.length))
-    : ''
+  const maskedEmail = email.replace(/(.{2})(.*)(?=@)/, (_, a, b) => a + '*'.repeat(b.length))
 
   return (
     <Card className="auth-card">
       <CardHeader className="auth-card-header">
         <CardTitle className="auth-card-title">Enter Verification Code</CardTitle>
-        <CardDescription>
-          A 6-digit code was sent to {maskedEmail}.
-        </CardDescription>
+        <CardDescription>A 6-digit code was sent to {maskedEmail}.</CardDescription>
       </CardHeader>
 
       <CardContent>
@@ -107,12 +101,7 @@ export default function OTPStep() {
                 <FormItem>
                   <FormLabel>Verification Code</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="123456"
-                      maxLength={6}
-                      inputMode="numeric"
-                      {...field}
-                    />
+                    <Input placeholder="123456" maxLength={6} inputMode="numeric" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,11 +119,7 @@ export default function OTPStep() {
               disabled={!canResend || isLoading}
               onClick={handleResend}
             >
-              {isLoading && canResend
-                ? 'Sending...'
-                : canResend
-                  ? 'Resend'
-                  : `Resend (${formatCountdown(countdown)})`}
+              {isLoading && canResend ? 'Sending...' : canResend ? 'Resend' : `Resend (${formatCountdown(countdown)})`}
             </Button>
           </form>
         </Form>

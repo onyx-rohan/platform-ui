@@ -1,29 +1,29 @@
 import { createContext, useContext, useState } from 'react'
 import type { ReactNode } from 'react'
-import LoginStep from '@/components/auth/LoginStep'
-import SignUpStep from '@/components/auth/SignUpStep'
-import ForgotPasswordStep from '@/components/auth/ForgotPasswordStep'
-import OTPStep from '@/components/auth/OTPStep'
-import ChangePasswordStep from '@/components/auth/ChangePasswordStep'
+import LoginForm from '@/components/auth/login/LoginForm'
+import SignUpForm from '@/components/auth/signup/SignUpForm'
+import ForgotPasswordForm from '@/components/auth/forgot_password/ForgotPasswordForm'
+import OTPForm from '@/components/auth/OTPForm'
+import ChangePasswordForm from '@/components/auth/forgot_password/ChangePasswordForm'
 
-type AuthStep = 'login' | 'signup' | 'forgot-password' | 'otp' | 'change-password'
+type ActiveView =
+  | { type: 'login' }
+  | { type: 'signup' }
+  | { type: 'forgot-password' }
+  | { type: 'otp'; email: string; reason: 'SIGNUP' | 'RESET_PASSWORD' }
+  | { type: 'change-password'; email: string; confirmationCode: string }
+  | null
 
-interface AuthStepData {
-  email: string
-  reason: 'SIGNUP' | 'RESET_PASSWORD'
-  confirmationCode: string
+interface AuthContext {
+  openLogin: () => void
+  openSignUp: () => void
+  openForgotPassword: () => void
+  openOTP: (email: string, reason: 'SIGNUP' | 'RESET_PASSWORD') => void
+  openChangePassword: (email: string, confirmationCode: string) => void
+  close: () => void
 }
 
-interface AuthLayoutContextValue {
-  openLoginModal: () => void
-  openSignUpModal: () => void
-  openForgotPasswordModal: () => void
-  closeAuthLayout: () => void
-  goToStep: (step: AuthStep, data?: Partial<AuthStepData>) => void
-  stepData: Partial<AuthStepData>
-}
-
-const AuthLayoutContext = createContext<AuthLayoutContextValue | null>(null)
+const AuthLayoutContext = createContext<AuthContext | null>(null)
 
 export function useAuthLayout() {
   const ctx = useContext(AuthLayoutContext)
@@ -32,60 +32,27 @@ export function useAuthLayout() {
 }
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [currentStep, setCurrentStep] = useState<AuthStep>('login')
-  const [stepData, setStepData] = useState<Partial<AuthStepData>>({})
+  const [activeView, setActiveView] = useState<ActiveView>(null)
 
-  function openLoginModal() {
-    setStepData({})
-    setCurrentStep('login')
-    setIsOpen(true)
-  }
-
-  function openSignUpModal() {
-    setStepData({})
-    setCurrentStep('signup')
-    setIsOpen(true)
-  }
-
-  function openForgotPasswordModal() {
-    setStepData({})
-    setCurrentStep('forgot-password')
-    setIsOpen(true)
-  }
-
-  function closeAuthLayout() {
-    setIsOpen(false)
-    setStepData({})
-  }
-
-  function goToStep(step: AuthStep, data?: Partial<AuthStepData>) {
-    if (data) setStepData(prev => ({ ...prev, ...data }))
-    setCurrentStep(step)
-  }
+  const openLogin = () => setActiveView({ type: 'login' })
+  const openSignUp = () => setActiveView({ type: 'signup' })
+  const openForgotPassword = () => setActiveView({ type: 'forgot-password' })
+  const openOTP = (email: string, reason: 'SIGNUP' | 'RESET_PASSWORD') => setActiveView({ type: 'otp', email, reason })
+  const openChangePassword = (email: string, confirmationCode: string) => setActiveView({ type: 'change-password', email, confirmationCode })
+  const close = () => setActiveView(null)
 
   return (
-    <AuthLayoutContext.Provider value={{
-      openLoginModal,
-      openSignUpModal,
-      openForgotPasswordModal,
-      closeAuthLayout,
-      goToStep,
-      stepData,
-    }}>
+    <AuthLayoutContext.Provider value={{ openLogin, openSignUp, openForgotPassword, openOTP, openChangePassword, close }}>
       {children}
-      {isOpen && (
+      {activeView && (
         <div className="auth-modal-overlay">
-          <div
-            className="auth-modal-backdrop"
-            onClick={closeAuthLayout}
-          />
+          <div className="auth-modal-backdrop" onClick={close} />
           <div className="auth-modal-content">
-            {currentStep === 'login' && <LoginStep />}
-            {currentStep === 'signup' && <SignUpStep />}
-            {currentStep === 'forgot-password' && <ForgotPasswordStep />}
-            {currentStep === 'otp' && <OTPStep />}
-            {currentStep === 'change-password' && <ChangePasswordStep />}
+            {activeView.type === 'login' && <LoginForm />}
+            {activeView.type === 'signup' && <SignUpForm />}
+            {activeView.type === 'forgot-password' && <ForgotPasswordForm />}
+            {activeView.type === 'otp' && <OTPForm email={activeView.email} reason={activeView.reason} />}
+            {activeView.type === 'change-password' && <ChangePasswordForm email={activeView.email} confirmationCode={activeView.confirmationCode} />}
           </div>
         </div>
       )}

@@ -14,22 +14,22 @@ const schema = z.object({
   email: z.email({ message: 'Please enter a valid email address' }),
 })
 
-type ForgotPasswordFormValues = z.infer<typeof schema>
+type FormValues = z.infer<typeof schema>
 
-export default function ForgotPasswordStep() {
-  const { goToStep } = useAuthLayout()
+export default function ForgotPasswordForm() {
+  const { openLogin, openOTP } = useAuthLayout()
   const [isLoading, setIsLoading] = useState(false)
 
-  const form = useForm<ForgotPasswordFormValues>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { email: '' },
   })
 
-  async function onSubmit(values: ForgotPasswordFormValues) {
+  async function onSubmit(values: FormValues) {
     setIsLoading(true)
     try {
       await resetPassword({ username: values.email })
-      goToStep('otp', { email: values.email, reason: 'RESET_PASSWORD' })
+      openOTP(values.email, 'RESET_PASSWORD')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to send reset code'
       toast.error('Reset failed', { description: message })
@@ -72,13 +72,7 @@ export default function ForgotPasswordStep() {
 
       <CardFooter className="auth-card-footer">
         Remember your password?{' '}
-        <button
-          type="button"
-          onClick={() => goToStep('login')}
-          className="auth-link"
-        >
-          Login
-        </button>
+        <button type="button" onClick={openLogin} className="auth-link">Login</button>
       </CardFooter>
     </Card>
   )

@@ -10,7 +10,6 @@ import BusinessPage from '@/app/business/BusinessPage'
 import ProfilePage from '@/app/user/ProfilePage'
 import ManageUsersPage from '@/app/admin/ManageUsersPage'
 import ManageBusinessesPage from '@/app/admin/ManageBusinessesPage'
-import ManageProductsPage from '@/app/admin/ManageProductsPage'
 
 export const router = createBrowserRouter([
   {
@@ -34,7 +33,6 @@ export const router = createBrowserRouter([
               { path: '/admin/users/:id',         element: <ManageUsersPage /> },
               { path: '/admin/businesses',        element: <ManageBusinessesPage /> },
               { path: '/admin/businesses/:id',    element: <ManageBusinessesPage /> },
-              { path: '/admin/products',          element: <ManageProductsPage /> },
             ],
           },
         ],
