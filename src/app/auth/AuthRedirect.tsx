@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthLayout } from '@/app/layouts/AuthLayout'
 
 export function LoginRedirect() {
-  const { openLoginModal } = useAuthLayout()
+  const { openLogin } = useAuthLayout()
   const navigate = useNavigate()
 
   useEffect(() => {
-    openLoginModal()
+    openLogin()
     navigate('/', { replace: true })
   }, [])
 
@@ -15,11 +15,11 @@ export function LoginRedirect() {
 }
 
 export function SignUpRedirect() {
-  const { openSignUpModal } = useAuthLayout()
+  const { openSignUp } = useAuthLayout()
   const navigate = useNavigate()
 
   useEffect(() => {
-    openSignUpModal()
+    openSignUp()
     navigate('/', { replace: true })
   }, [])
 
