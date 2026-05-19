@@ -1,5 +1,5 @@
 export type UserType = 'CONSUMER' | 'BUSINESS' | 'ADMIN' | 'SUPER'
-export type PaymentMethod = 'CARD' | 'CASH'
+export type PaymentMethod = 'CARD' | 'CASH' | 'ON_PAYOUT'
 export type AccountStatus = 'ACTIVE' | 'INACTIVE' | 'DEACTIVATED' | 'PENDING_DEACTIVATION'
 export type SubscriptionStatus = 'PENDING_PAYMENT' | 'GRACE_PERIOD' | 'DEACTIVATED' | 'ACTIVE'
 export type DueCycle = 'WEEKLY' | 'BI_WEEKLY' | 'MONTHLY' | 'SEMI_MONTHLY' | 'BI_MONTHLY' | 'QUARTERLY' | 'SEMI_YEARLY' | 'YEARLY'

@@ -14,7 +14,7 @@ import type { DueCycle, OfferingTier, PaymentMethod, ProductOffering } from '@/t
 
 const OFFERING_TIERS: OfferingTier[] = ['SIMPLE', 'PRO', 'ENTERPRISE', 'LIMITED', 'NONE']
 const DUE_CYCLES: DueCycle[] = ['WEEKLY', 'BI_WEEKLY', 'MONTHLY', 'SEMI_MONTHLY', 'BI_MONTHLY', 'QUARTERLY', 'SEMI_YEARLY', 'YEARLY']
-const PAYMENT_METHODS: PaymentMethod[] = ['CARD', 'CASH']
+const PAYMENT_METHODS: PaymentMethod[] = ['CARD', 'CASH', 'ON_PAYOUT']
 
 const schema = z.object({
   tier: z.enum(['SIMPLE', 'PRO', 'ENTERPRISE', 'LIMITED', 'NONE'] as const),
@@ -22,7 +22,7 @@ const schema = z.object({
   resetCycle: z.enum(['WEEKLY', 'BI_WEEKLY', 'MONTHLY', 'SEMI_MONTHLY', 'BI_MONTHLY', 'QUARTERLY', 'SEMI_YEARLY', 'YEARLY'] as const),
   limit: z.number().min(0, 'Limit must be 0 or greater'),
   price: z.number().min(0, 'Price must be 0 or greater'),
-  paymentMethods: z.array(z.enum(['CARD', 'CASH'] as const)).min(1, 'At least one payment method is required'),
+  paymentMethods: z.array(z.enum(['CARD', 'CASH', 'ON_PAYOUT'] as const)).min(1, 'At least one payment method is required'),
 })
 
 type FormValues = z.infer<typeof schema>

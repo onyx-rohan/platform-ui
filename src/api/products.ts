@@ -28,7 +28,7 @@ export async function getProduct(id: number): Promise<Product> {
 }
 
 export async function getProductOfferings(id: number): Promise<ProductOffering[]> {
-  const { data } = await apiClient.get<ProductOffering[]>(`/api/product/${id}/offering`)
+  const { data } = await apiClient.get<ProductOffering[]>(`/api/product/${id}/offerings`)
   return data
 }
 
