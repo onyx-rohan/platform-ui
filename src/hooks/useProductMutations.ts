@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createProduct, updateProduct, hardDeleteProduct, type ProductRequest } from '@/api/products'
+import { createProduct, updateProduct, softDeleteProduct, hardDeleteProduct, type ProductRequest } from '@/api/products'
 
 export function useProductMutations() {
   const queryClient = useQueryClient()
@@ -15,10 +15,15 @@ export function useProductMutations() {
     onSuccess: invalidate,
   })
 
+  const softDelete = useMutation({
+    mutationFn: (id: number) => softDeleteProduct(id),
+    onSuccess: invalidate,
+  })
+
   const hardDelete = useMutation({
     mutationFn: (id: number) => hardDeleteProduct(id),
     onSuccess: invalidate,
   })
 
-  return { create, update, hardDelete }
+  return { create, update, softDelete, hardDelete }
 }

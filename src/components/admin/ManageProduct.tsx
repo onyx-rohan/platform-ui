@@ -19,7 +19,7 @@ type FormValues = z.infer<typeof schema>
 
 export default function ManageProduct({ product }: { product? : Product }) {
   const { mode, close } = useAdminLayout()
-  const { create, update, hardDelete } = useProductMutations()
+  const { create, update, softDelete, hardDelete } = useProductMutations()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -46,7 +46,7 @@ export default function ManageProduct({ product }: { product? : Product }) {
 
   async function handleSoftDelete() {
     try {
-      await update.mutateAsync({ id: product!.id, payload: { name: product!.name, description: product!.description, deleted: true } })
+      await softDelete.mutateAsync(product!.id)
       toast.success(`Soft-deleted ${product!.name}`)
       close()
     } catch {
@@ -118,10 +118,10 @@ export default function ManageProduct({ product }: { product? : Product }) {
                 <Button
                   type="button"
                   className="bg-amber-500 hover:bg-amber-600 text-white"
-                  disabled={update.isPending}
+                  disabled={softDelete.isPending}
                   onClick={handleSoftDelete}
                 >
-                  {update.isPending ? 'Deleting...' : 'Soft Delete'}
+                  {softDelete.isPending ? 'Deleting...' : 'Soft Delete'}
                 </Button>
               ) : mode === 'hard-delete' ? (
                 <Button

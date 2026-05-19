@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   createProductOffering,
   updateProductOffering,
+  softDeleteProductOffering,
   hardDeleteProductOffering,
   type ProductOfferingRequest,
 } from '@/api/products'
@@ -21,10 +22,15 @@ export function useOfferingMutations(productId: number) {
     onSuccess: invalidate,
   })
 
+  const softDelete = useMutation({
+    mutationFn: (offeringId: number) => softDeleteProductOffering(productId, offeringId),
+    onSuccess: invalidate,
+  })
+
   const hardDelete = useMutation({
     mutationFn: (offeringId: number) => hardDeleteProductOffering(productId, offeringId),
     onSuccess: invalidate,
   })
 
-  return { create, update, hardDelete }
+  return { create, update, softDelete, hardDelete }
 }

@@ -56,6 +56,16 @@ export async function updateProduct(id: number, payload: ProductRequest): Promis
   return data
 }
 
+export async function softDeleteProduct(id: number): Promise<Product> {
+  const { data } = await apiClient.put<Product>(`/api/product/${id}`, { deleted: true })
+  return data
+}
+
 export async function hardDeleteProduct(id: number): Promise<void> {
   await apiClient.delete(`/api/product/${id}`)
+}
+
+export async function softDeleteProductOffering(productId: number, offeringId: number): Promise<ProductOffering> {
+  const { data } = await apiClient.put<ProductOffering>(`/api/product/${productId}/offering/${offeringId}`, { deleted: true })
+  return data
 }

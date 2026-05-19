@@ -30,7 +30,7 @@ type FormValues = z.infer<typeof schema>
 
 export default function ManageProductOffering({ product_offering }: { product_offering?: ProductOffering }) {
   const { mode, close } = useAdminLayout()
-  const { create, update, hardDelete } = useOfferingMutations(product_offering!.product!.id)
+  const { create, update, softDelete, hardDelete } = useOfferingMutations(product_offering!.product!.id)
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -63,18 +63,7 @@ export default function ManageProductOffering({ product_offering }: { product_of
 
   async function handleSoftDelete() {
     try {
-      await update.mutateAsync({
-        offeringId: product_offering!.id,
-        payload: {
-          tier: product_offering!.tier,
-          description: product_offering!.description,
-          resetCycle: product_offering!.resetCycle,
-          limit: product_offering!.limit,
-          price: product_offering!.price,
-          paymentMethods: product_offering!.paymentMethods,
-          deleted: true,
-        },
-      })
+      await softDelete.mutateAsync(product_offering!.id)
       toast.success(`Soft-deleted ${product_offering!.tier} offering`)
       close()
     } catch {
@@ -242,10 +231,10 @@ export default function ManageProductOffering({ product_offering }: { product_of
                 <Button
                   type="button"
                   className="bg-amber-500 hover:bg-amber-600 text-white"
-                  disabled={update.isPending}
+                  disabled={softDelete.isPending}
                   onClick={handleSoftDelete}
                 >
-                  {update.isPending ? 'Deleting...' : 'Soft Delete'}
+                  {softDelete.isPending ? 'Deleting...' : 'Soft Delete'}
                 </Button>
               ) : mode === 'hard-delete' ? (
                 <Button
