@@ -45,7 +45,6 @@ export default function ManageProduct({ product }: { product? : Product }) {
   }
 
   async function handleSoftDelete() {
-    if (!window.confirm(`Soft-delete "${product!.name}"? It will be hidden from users but remain in the database.`)) return
     try {
       await update.mutateAsync({ id: product!.id, payload: { name: product!.name, description: product!.description, deleted: true } })
       toast.success(`Soft-deleted ${product!.name}`)
@@ -56,7 +55,6 @@ export default function ManageProduct({ product }: { product? : Product }) {
   }
 
   async function handleHardDelete() {
-    if (!window.confirm(`Permanently delete "${product!.name}"? This cannot be undone.`)) return
     try {
       await hardDelete.mutateAsync(product!.id)
       toast.success(`Deleted ${product!.name}`)
@@ -68,7 +66,8 @@ export default function ManageProduct({ product }: { product? : Product }) {
 
   const title = mode === 'create' ? 'Create Product'
     : mode === 'edit' ? `Edit — ${product!.name}`
-    : `Delete — ${product!.name}`
+    : mode === 'soft-delete' ? `Soft Delete — ${product!.name}`
+    : `Hard Delete — ${product!.name}`
 
   return (
     <Card className="w-full">
@@ -77,7 +76,7 @@ export default function ManageProduct({ product }: { product? : Product }) {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={mode !== 'delete' ? form.handleSubmit(onSubmit) : e => e.preventDefault()} className="space-y-4">
+          <form onSubmit={mode !== 'soft-delete' && mode !== 'hard-delete' ? form.handleSubmit(onSubmit) : e => e.preventDefault()} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -85,7 +84,7 @@ export default function ManageProduct({ product }: { product? : Product }) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input disabled={mode === 'delete'} placeholder="Product name" {...field} />
+                    <Input disabled={mode === 'soft-delete' || mode === 'hard-delete'} placeholder="Product name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -100,8 +99,8 @@ export default function ManageProduct({ product }: { product? : Product }) {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <textarea
-                      disabled={mode === 'delete'}
-                      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={mode === 'soft-delete' || mode === 'hard-delete'}
+                      className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       placeholder="Product description..."
                       {...field}
                     />
@@ -115,25 +114,24 @@ export default function ManageProduct({ product }: { product? : Product }) {
               <Button type="button" variant="ghost" onClick={close}>
                 Cancel
               </Button>
-              {mode === 'delete' ? (
-                <>
-                  <Button
-                    type="button"
-                    className="bg-amber-500 hover:bg-amber-600 text-white"
-                    disabled={update.isPending}
-                    onClick={handleSoftDelete}
-                  >
-                    {update.isPending ? 'Deleting...' : 'Soft Delete'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    disabled={hardDelete.isPending}
-                    onClick={handleHardDelete}
-                  >
-                    {hardDelete.isPending ? 'Deleting...' : 'Hard Delete'}
-                  </Button>
-                </>
+              {mode === 'soft-delete' ? (
+                <Button
+                  type="button"
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  disabled={update.isPending}
+                  onClick={handleSoftDelete}
+                >
+                  {update.isPending ? 'Deleting...' : 'Soft Delete'}
+                </Button>
+              ) : mode === 'hard-delete' ? (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  disabled={hardDelete.isPending}
+                  onClick={handleHardDelete}
+                >
+                  {hardDelete.isPending ? 'Deleting...' : 'Hard Delete'}
+                </Button>
               ) : (
                 <Button type="submit" disabled={create.isPending || update.isPending}>
                   {create.isPending || update.isPending ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}

@@ -62,7 +62,6 @@ export default function ManageProductOffering({ product_offering }: { product_of
   }
 
   async function handleSoftDelete() {
-    if (!window.confirm(`Soft-delete this ${product_offering!.tier} offering? It will be hidden but remain in the database.`)) return
     try {
       await update.mutateAsync({
         offeringId: product_offering!.id,
@@ -84,7 +83,6 @@ export default function ManageProductOffering({ product_offering }: { product_of
   }
 
   async function handleHardDelete() {
-    if (!window.confirm(`Permanently delete this ${product_offering!.tier} offering? This cannot be undone.`)) return
     try {
       await hardDelete.mutateAsync(product_offering!.id)
       toast.success(`Deleted ${product_offering!.tier} offering`)
@@ -100,7 +98,9 @@ export default function ManageProductOffering({ product_offering }: { product_of
 
   const title = mode === 'create'
     ? `Add Offering — ${product_offering!.product!.name}`
-    : `${mode === 'edit' ? 'Edit' : 'Delete'} Offering — ${product_offering!.tier}`
+    : mode === 'edit' ? `Edit Offering — ${product_offering!.tier}`
+    : mode === 'soft-delete' ? `Soft Delete Offering — ${product_offering!.tier}`
+    : `Hard Delete Offering — ${product_offering!.tier}`
 
   return (
     <Card className="w-full">
@@ -109,14 +109,14 @@ export default function ManageProductOffering({ product_offering }: { product_of
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={mode !== 'delete' ? form.handleSubmit(onSubmit) : e => e.preventDefault()} className="space-y-4">
+          <form onSubmit={mode !== 'soft-delete' && mode !== 'hard-delete' ? form.handleSubmit(onSubmit) : e => e.preventDefault()} className="space-y-4">
             <FormField
               control={form.control}
               name="tier"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tier</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={mode === 'delete'}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={mode === 'soft-delete' || mode === 'hard-delete'}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="Select tier" /></SelectTrigger>
                     </FormControl>
@@ -137,8 +137,8 @@ export default function ManageProductOffering({ product_offering }: { product_of
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <textarea
-                      disabled={mode === 'delete'}
-                      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={mode === 'soft-delete' || mode === 'hard-delete'}
+                      className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       placeholder="Offering description..."
                       {...field}
                     />
@@ -154,7 +154,7 @@ export default function ManageProductOffering({ product_offering }: { product_of
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Billing Cycle</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={mode === 'delete'}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={mode === 'soft-delete' || mode === 'hard-delete'}>
                     <FormControl>
                       <SelectTrigger><SelectValue placeholder="Select billing cycle" /></SelectTrigger>
                     </FormControl>
@@ -177,7 +177,7 @@ export default function ManageProductOffering({ product_offering }: { product_of
                     <FormControl>
                       <Input
                         type="number" min={0} step={1}
-                        disabled={mode === 'delete'}
+                        disabled={mode === 'soft-delete' || mode === 'hard-delete'}
                         {...field}
                         onChange={e => field.onChange(Number(e.target.value))}
                       />
@@ -195,7 +195,7 @@ export default function ManageProductOffering({ product_offering }: { product_of
                     <FormControl>
                       <Input
                         type="number" min={0} step={0.01}
-                        disabled={mode === 'delete'}
+                        disabled={mode === 'soft-delete' || mode === 'hard-delete'}
                         {...field}
                         onChange={e => field.onChange(Number(e.target.value))}
                       />
@@ -216,12 +216,12 @@ export default function ManageProductOffering({ product_offering }: { product_of
                     {PAYMENT_METHODS.map(method => (
                       <label
                         key={method}
-                        className={`flex items-center gap-2 select-none text-sm ${mode === 'delete' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                        className={`flex items-center gap-2 select-none text-sm ${mode === 'soft-delete' || mode === 'hard-delete' ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                       >
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded border-border accent-primary"
-                          disabled={mode === 'delete'}
+                          disabled={mode === 'soft-delete' || mode === 'hard-delete'}
                           checked={field.value.includes(method)}
                           onChange={() => field.onChange(toggleMethod(method, field.value))}
                         />
@@ -238,25 +238,24 @@ export default function ManageProductOffering({ product_offering }: { product_of
               <Button type="button" variant="ghost" onClick={close}>
                 Cancel
               </Button>
-              {mode === 'delete' ? (
-                <>
-                  <Button
-                    type="button"
-                    className="bg-amber-500 hover:bg-amber-600 text-white"
-                    disabled={update.isPending}
-                    onClick={handleSoftDelete}
-                  >
-                    {update.isPending ? 'Deleting...' : 'Soft Delete'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    disabled={hardDelete.isPending}
-                    onClick={handleHardDelete}
-                  >
-                    {hardDelete.isPending ? 'Deleting...' : 'Hard Delete'}
-                  </Button>
-                </>
+              {mode === 'soft-delete' ? (
+                <Button
+                  type="button"
+                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  disabled={update.isPending}
+                  onClick={handleSoftDelete}
+                >
+                  {update.isPending ? 'Deleting...' : 'Soft Delete'}
+                </Button>
+              ) : mode === 'hard-delete' ? (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  disabled={hardDelete.isPending}
+                  onClick={handleHardDelete}
+                >
+                  {hardDelete.isPending ? 'Deleting...' : 'Hard Delete'}
+                </Button>
               ) : (
                 <Button type="submit" disabled={create.isPending || update.isPending}>
                   {create.isPending || update.isPending ? 'Saving...' : mode === 'create' ? 'Create' : 'Update'}

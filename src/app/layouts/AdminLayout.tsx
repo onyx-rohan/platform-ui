@@ -4,7 +4,7 @@ import ManageProductOffering from '@/components/admin/ManageProductOffering'
 import type { ReactNode } from 'react'
 import type { Product, ProductOffering } from '@/types'
 
-export type AdminMode = 'create' | 'edit' | 'delete'
+export type AdminMode = 'create' | 'edit' | 'soft-delete' | 'hard-delete'
 
 type ActiveForm =
   | { type: 'product'; data?: Product }

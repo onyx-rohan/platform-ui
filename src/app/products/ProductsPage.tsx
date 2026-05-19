@@ -41,7 +41,7 @@ function ProductList() {
       </div>
       <div className="product-grid">
         {products?.map(product => (
-          <Card key={product.id} className="flex flex-col">
+          <Card key={product.id} className="aspect-5/6 flex flex-col">
             <CardHeader className="flex-1">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
@@ -53,7 +53,10 @@ function ProductList() {
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => manageProduct('edit', product)}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => manageProduct('delete', product)}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-amber-500 hover:text-amber-600" onClick={() => manageProduct('soft-delete', product)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => manageProduct('hard-delete', product)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -109,7 +112,10 @@ function ProductDetail({ id }: { id: number }) {
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => manageProduct('edit', product)}>
               <Pencil className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive" onClick={() => manageProduct('delete', product)}>
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-amber-500 hover:text-amber-600" onClick={() => manageProduct('soft-delete', product)}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => manageProduct('hard-delete', product)}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -132,7 +138,7 @@ function ProductDetail({ id }: { id: number }) {
       ) : (
         <div className="product-grid">
           {productOfferings.map(productOffering => (
-            <Card key={productOffering.id}>
+            <Card key={productOffering.id} className="aspect-5/6 flex flex-col">
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
@@ -147,7 +153,10 @@ function ProductDetail({ id }: { id: number }) {
                       <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => manageProductOffering('edit', productOffering)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => manageProductOffering('delete', productOffering)}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-amber-500 hover:text-amber-600" onClick={() => manageProductOffering('soft-delete', productOffering)}>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => manageProductOffering('hard-delete', productOffering)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
