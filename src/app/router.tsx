@@ -7,6 +7,7 @@ import HomePage from '@/app/home/HomePage'
 import ProductsPage from '@/app/products/ProductsPage'
 import CompanyPage from '@/app/company/CompanyPage'
 import BusinessPage from '@/app/business/BusinessPage'
+import ProductUsagePage from '@/app/business/ProductUsagePage'
 import ProfilePage from '@/app/user/ProfilePage'
 import ManageUsersPage from '@/app/admin/ManageUsersPage'
 import ManageBusinessesPage from '@/app/admin/ManageBusinessesPage'
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/profile',               element: <ProfilePage /> },
           { path: '/business/:id',          element: <BusinessPage /> },
+          { path: '/business/:id/product-usage', element: <ProductUsagePage /> },
           {
             element: <AdminRoute />,
             children: [

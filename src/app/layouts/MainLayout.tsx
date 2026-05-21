@@ -60,6 +60,20 @@ function MainLayoutInner() {
               </DropdownMenuItem>
             </NavDropdown>
 
+            {currentUser?.business && (
+              <NavDropdown
+                trigger={
+                  <Button variant="ghost" size="sm" className="px-1.5">
+                    Business <ChevronDown className="h-3 w-3" />
+                  </Button>
+                }
+              >
+                <DropdownMenuItem asChild>
+                  <Link to={`/business/${currentUser.business.id}/product-usage`}>Product Usage</Link>
+                </DropdownMenuItem>
+              </NavDropdown>
+            )}
+
             <Button variant="ghost" size="sm" asChild>
               <Link to="/company">Company</Link>
             </Button>

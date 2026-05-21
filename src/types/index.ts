@@ -78,3 +78,11 @@ export interface ProductOffering {
   createdAt: string
   updatedAt: string
 }
+
+export interface ProductUsage {
+  id: number
+  usage: number
+  limit: number
+  resetCycle: DueCycle
+  productOffering: ProductOffering
+}
